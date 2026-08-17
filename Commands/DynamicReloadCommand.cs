@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
 using CommandSystem;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using LabApi.Loader;
 using MEC;
 using RemoteAdmin;
+using RueI.API;
 using ServerADS.Configs;
+using ServerADS.Handlers;
 
 namespace ServerADS.Commands;
 
@@ -38,24 +41,45 @@ public class DynamicReloadCommand : ICommand
             return false;
         }
         
+        // Check current state of the GlobalBanners config
+        if (!Core.Instance.TryLoadConfig<GlobalBanners>("GlobalBanners", out var gbConfig))
+        {
+            response = "GlobalBanners could not be loaded because has errors.";
+            return false;
+        }
+        
         Core.Instance.WmConfig = wmConfig;
         Core.Instance.AfsConfig = afsConfig;
+        Core.Instance.GlobalBanners = gbConfig;
+
+        #region afsHandler
         
-        var afsHandler = Core.Instance.AfsHandler;
-        
-        if (afsHandler.AdviceGeneratorCoroutine != null)
-        {
-            Timing.KillCoroutines((CoroutineHandle)afsHandler.AdviceGeneratorCoroutine);
-            afsHandler.AdviceGeneratorCoroutine = null;
-        }
-        
-        if (afsConfig.IsEnabled)
-        {
-            if (Round.IsRoundStarted && !Round.IsRoundEnded)
+            var afsHandler = Core.Instance.AfsHandler;
+            
+            if (afsHandler.AdviceGeneratorCoroutine != null)
             {
-                afsHandler.AdviceGeneratorCoroutine = Timing.RunCoroutine(afsHandler.AdviceGenerator());
+                Timing.KillCoroutines((CoroutineHandle)afsHandler.AdviceGeneratorCoroutine);
+                afsHandler.AdviceGeneratorCoroutine = null;
             }
-        }
+            
+            if (afsConfig.IsEnabled)
+            {
+                if (Round.IsRoundStarted && !Round.IsRoundEnded)
+                {
+                    afsHandler.AdviceGeneratorCoroutine = Timing.RunCoroutine(afsHandler.AdviceGenerator());
+                }
+            }
+        
+        #endregion
+
+        #region gbHandler
+
+            GbHandler.UnloadBanners();
+            
+            if (Core.Instance.GlobalBanners.IsEnabled)
+                GbHandler.LoadBanners(Player.ReadyList.Where(pl => pl.IsPlayer).ToList());
+
+        #endregion
         
         response = "Plugin seccessfully reloaded.";
         return true;

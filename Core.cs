@@ -26,9 +26,11 @@ namespace ServerADS
         
         public WelcomeMessages WmConfig { get; set; }
         public AdvicesForSpectators AfsConfig { get; set; }
+        public GlobalBanners GlobalBanners { get; set; }
 
         public WmHandler WmHandler { get; private set; }
         public AfsHandler AfsHandler { get; private set; }
+        public GbHandler GbHandler { get; private set; }
         
         public override void Enable()
         {
@@ -36,9 +38,11 @@ namespace ServerADS
             
             WmConfig = this.LoadConfig<WelcomeMessages>("WelcomeMessages");
             AfsConfig = this.LoadConfig<AdvicesForSpectators>("AdvicesForSpectators");
+            GlobalBanners = this.LoadConfig<GlobalBanners>("GlobalBanners");
 
             WmHandler = new WmHandler();
             AfsHandler = new AfsHandler();
+            GbHandler = new GbHandler();
             
             SubscribeEvents();
         }
@@ -49,7 +53,9 @@ namespace ServerADS
             
             WmConfig = null;
             AfsConfig = null;
+            GlobalBanners = null;
             
+            GbHandler = null;
             AfsHandler = null;
             WmHandler = null;
             
@@ -61,6 +67,9 @@ namespace ServerADS
             api.PlayerEvents.Joined += WmHandler.OnPlayerJoined;
             api.ServerEvents.RoundStarted += AfsHandler.OnRoundStarted;
             api.ServerEvents.WaitingForPlayers += AfsHandler.OnWaitingForPlayers;
+            api.PlayerEvents.Joined += GbHandler.OnPlayerJoined;
+            api.PlayerEvents.Left += GbHandler.OnPlayerLeft;
+            api.PlayerEvents.ChangedRole += GbHandler.OnRoleChanged;
         }
         
         private void UnsubscribeEvents()
@@ -68,6 +77,9 @@ namespace ServerADS
             api.PlayerEvents.Joined -= WmHandler.OnPlayerJoined;
             api.ServerEvents.RoundStarted -= AfsHandler.OnRoundStarted;
             api.ServerEvents.WaitingForPlayers -= AfsHandler.OnWaitingForPlayers;
+            api.PlayerEvents.Joined -= GbHandler.OnPlayerJoined;
+            api.PlayerEvents.Left -= GbHandler.OnPlayerLeft;
+            api.PlayerEvents.ChangedRole -= GbHandler.OnRoleChanged;
         }
     }
 }

@@ -99,10 +99,12 @@
         <Compile Include="Commands\DynamicReloadCommand.cs" />
         <Compile Include="Commands\ServerAdsCommand.cs" />
         <Compile Include="Commands\SpecAdviceCommand.cs" />
+        <Compile Include="Configs\GlobalBanners.cs" />
         <Compile Include="Configs\WelcomeMessages.cs" />
         <Compile Include="Configs\AdvicesForSpectators.cs" />
         <Compile Include="Core.cs" />
         <Compile Include="Handlers\AfsHandler.cs" />
+        <Compile Include="Handlers\GbHandler.cs" />
         <Compile Include="Handlers\WmHandler.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
     </ItemGroup>

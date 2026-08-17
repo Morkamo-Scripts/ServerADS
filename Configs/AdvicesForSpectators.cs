@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using PlayerRoles;
 
 namespace ServerADS.Configs;
 
@@ -25,4 +26,10 @@ public class AdvicesForSpectators
         "SCP-500 is the best medical item.",
         "SCP-1344 is the only legal wallhack item."
     ];
+    
+    [Description("Roles that don't see these messages.")]
+    public List<RoleTypeId> ExcludedRoles { get; set; } = new()
+    {
+        RoleTypeId.Filmmaker
+    };
 }

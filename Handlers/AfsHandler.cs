@@ -32,7 +32,7 @@ public class AfsHandler
                 continue;
             }
 
-            foreach (var player in players)
+            foreach (var player in players.Where(pl => !Core.Instance.AfsConfig.ExcludedRoles.Contains(pl.Role)))
             {
                 var display = RueDisplay.Get(player);
 
